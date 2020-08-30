@@ -1,0 +1,21 @@
+{
+  "Table": {
+    "TableName": "serverless-api-typescript-dev-user",
+    "KeySchema": [
+      {
+        "AttributeName": "id",
+        "KeyType": "HASH"
+      }
+    ],
+    "AttributeDefinitions": [
+      {
+        "AttributeName": "id",
+        "AttributeType": "S"
+      }
+    ],
+    "ProvisionedThroughput": {
+      "ReadCapacityUnits": 1,
+      "WriteCapacityUnits": 1
+    }
+  }
+}

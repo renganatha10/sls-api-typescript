@@ -1,11 +1,44 @@
-service: sls-api-typescript
+service: serverless-api-typescript
 
 frameworkVersion: ">=1.1.0 <2.0.0"
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
+
+package:
+  exclude:
+    - .dynamodb/**
+    - src/**
+
+custom:
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+    migration:
+      dir: lib/migrations
 
 provider:
   name: aws
   runtime: nodejs12.x
   region: ap-south-1
+  endpointType: regional
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}-user"
 
 functions:
   hello:
@@ -14,3 +47,55 @@ functions:
       - http:
           path: hello
           method: get
+
+  createUser:
+    handler: lib/handler.createUser
+    events:
+      - http:
+          path: user
+          method: post
+
+  getUser:
+    handler: lib/handler.getUser
+    events:
+      - http:
+          path: user/{id}
+          method: get
+
+  listUsers:
+    handler: lib/handler.listUsers
+    events:
+      - http:
+          path: users
+          method: get
+
+  deleteUser:
+    handler: lib/handler.deleteUser
+    events:
+      - http:
+          path: user/{id}
+          method: delete
+
+  updateUser:
+    handler: lib/handler.updateUser
+    events:
+      - http:
+          path: user/{id}
+          method: put
+
+resources:
+  Resources:
+    TodosDynamoDbTable:
+      Type: "AWS::DynamoDB::Table"
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}-user

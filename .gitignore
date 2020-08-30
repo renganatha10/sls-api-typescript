@@ -1,3 +1,5 @@
 node_modules
 lib
 .serverless
+.dynamodb
+.DS_Store
