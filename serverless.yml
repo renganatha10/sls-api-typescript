@@ -12,6 +12,8 @@ package:
     - src/**
 
 custom:
+  serverless-offline:
+    allowCache: true
   dynamodb:
     stages:
       - dev
