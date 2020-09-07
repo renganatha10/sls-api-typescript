@@ -6,6 +6,9 @@ import userList from "./handlers/user/list";
 import userDelete from "./handlers/user/delete";
 import userUpdate from "./handlers/user/update";
 
+import generateTokenUser from "./handlers/auth/generateToken";
+import authorizerUser from "./handlers/auth/authorizer";
+
 export const hello: APIGatewayProxyHandler = async event => {
   return {
     statusCode: 200,
@@ -26,3 +29,5 @@ export const getUser = userGet;
 export const listUsers = userList;
 export const deleteUser = userDelete;
 export const updateUser = userUpdate;
+export const generateToken = generateTokenUser;
+export const authorizer = authorizerUser;

@@ -31,6 +31,7 @@ provider:
   endpointType: regional
   environment:
     DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    JWT_SECRET: Hashed123$
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -43,6 +44,9 @@ provider:
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}-user"
 
 functions:
+  authorizerFunc:
+    handler: lib/handler.authorizer
+
   hello:
     handler: lib/handler.hello
     events:
@@ -63,6 +67,7 @@ functions:
       - http:
           path: user/{id}
           method: get
+          authorizer: authorizerFunc
 
   listUsers:
     handler: lib/handler.listUsers
@@ -84,6 +89,13 @@ functions:
       - http:
           path: user/{id}
           method: put
+
+  generateToken:
+    handler: lib/handler.generateToken
+    events:
+      - http:
+          path: auth/generateToken/{id}
+          method: get
 
 resources:
   Resources:
