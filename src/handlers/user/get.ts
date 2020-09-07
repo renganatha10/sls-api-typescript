@@ -1,10 +1,17 @@
-import { APIGatewayProxyHandler } from "aws-lambda";
+import { APIGatewayProxyWithLambdaAuthorizerHandler } from "aws-lambda";
+
 import dynamodb from "../../dynamodb";
 
-const get: APIGatewayProxyHandler = async event => {
-  const { pathParameters } = event;
+const get: APIGatewayProxyWithLambdaAuthorizerHandler<{
+  principalId: string;
+}> = async event => {
+  const {
+    requestContext: {
+      authorizer: { principalId }
+    }
+  } = event;
 
-  if (!pathParameters || !pathParameters.id) {
+  if (!principalId) {
     console.error("user id is empty");
     return {
       statusCode: 400,
@@ -12,12 +19,10 @@ const get: APIGatewayProxyHandler = async event => {
     };
   }
 
-  const { id } = pathParameters;
-
   const params = {
     TableName: `${process.env.DYNAMODB_TABLE}-user`,
     Key: {
-      id
+      id: principalId
     }
   };
 

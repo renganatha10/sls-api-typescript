@@ -2,7 +2,7 @@ import { APIGatewayTokenAuthorizerHandler } from "aws-lambda";
 import jwt from "jsonwebtoken";
 
 const authorize: APIGatewayTokenAuthorizerHandler = (event, context, cb) => {
-  console.log("Auth function invoked", event);
+  console.log("Auth function invoked");
   if (event.authorizationToken) {
     console.log();
     const token = event.authorizationToken;
@@ -26,6 +26,9 @@ const authorize: APIGatewayTokenAuthorizerHandler = (event, context, cb) => {
                 Resource: event.methodArn
               }
             ]
+          },
+          context: {
+            principalId
           }
         });
       }

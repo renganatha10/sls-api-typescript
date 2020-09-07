@@ -65,7 +65,7 @@ functions:
     handler: lib/handler.getUser
     events:
       - http:
-          path: user/{id}
+          path: user
           method: get
           authorizer: authorizerFunc
 
