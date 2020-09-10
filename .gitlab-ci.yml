@@ -1,0 +1,39 @@
+image: node:latest
+
+stages:
+  - build
+  - test
+  - deploy
+
+cache:
+  paths:
+    - node_modules/
+
+install_dependencies:
+  stage: build
+  script:
+    - npm install
+  artifacts:
+    paths:
+      - node_modules/
+
+lint:
+  stage: test
+  script:
+    - npm run precommit
+
+build:
+  stage: build
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - node_modules/
+
+deploy:stage:
+  stage: deploy
+  script: npm run deploy:stage
+
+deploy:prod:
+  stage: deploy
+  script: npm run deploy:prod

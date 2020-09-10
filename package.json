@@ -13,7 +13,9 @@
     "tsc": "tsc",
     "lint:fix": "eslint . --ext [.tsx,.ts] --fix",
     "lint": "eslint . --ext [.tsx,.ts]",
-    "precommit": "npm run tsc && npm run lint"
+    "precommit": "npm run tsc && npm run lint",
+    "deploy:stage": "serverless deploy --stage stage",
+    "deploy:prod": "serverless deploy --stage prod"
   },
   "author": "renganatha10@gmail.com <Renganatha. A>",
   "license": "MIT",
