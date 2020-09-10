@@ -2,53 +2,12 @@ image: node:latest
 
 stages:
   - setup
-  - test
-  - build
-  - deploy:stage
-  - deploy:prod
 
-cache:
-  paths:
-    - node_modules/
-    - lib/
-
-install_dependencies:
+setup_and_deploy:
   stage: setup
   script:
-    - npm install
-  artifacts:
-    paths:
-      - node_modules/
-
-lint:
-  stage: test
-  dependencies:
-    - install_dependencies
-  script:
-    - npm run precommit
-
-buildtsc:
-  stage: build
-  dependencies:
-    - install_dependencies
-  script:
+    - npm ci
+    - npm run pre-commit
+    - node_modules/.bin/serverless config credentials -p aws -k $AWS_ACCESS_KEY_ID -s $AWS_SECRET_ACCESS_KEY
     - npm run build
-  artifacts:
-    paths:
-      - lib/
-
-deploy:stage:
-  stage: deploy:stage
-  dependencies:
-    - install_dependencies
-    - buildtsc
-  script:
     - npm run deploy:stage
-
-deploy:prod:
-  stage: deploy:prod
-  dependencies:
-    - install_dependencies
-    - buildtsc
-  script:
-    - npm run deploy:prod
