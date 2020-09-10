@@ -1,16 +1,19 @@
 image: node:latest
 
 stages:
-  - build
+  - setup
   - test
-  - deploy
+  - build
+  - deploy:stage
+  - deploy:prod
 
 cache:
   paths:
     - node_modules/
+    - lib/
 
 install_dependencies:
-  stage: build
+  stage: setup
   script:
     - npm install
   artifacts:
@@ -19,21 +22,33 @@ install_dependencies:
 
 lint:
   stage: test
+  dependencies:
+    - install_dependencies
   script:
     - npm run precommit
 
-build:
+buildtsc:
   stage: build
+  dependencies:
+    - install_dependencies
   script:
     - npm run build
   artifacts:
     paths:
-      - node_modules/
+      - lib/
 
 deploy:stage:
-  stage: deploy
-  script: npm run deploy:stage
+  stage: deploy:stage
+  dependencies:
+    - install_dependencies
+    - buildtsc
+  script:
+    - npm run deploy:stage
 
 deploy:prod:
-  stage: deploy
-  script: npm run deploy:prod
+  stage: deploy:prod
+  dependencies:
+    - install_dependencies
+    - buildtsc
+  script:
+    - npm run deploy:prod
